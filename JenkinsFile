@@ -1,3 +1,37 @@
-pipeline{
+pipeline {
+    agent any
 
+    stages {
+        stage('checkout') {
+            steps {
+                script {
+                    checkout scmGit(branches: [[name: '*/feature_branch']], extensions: [], userRemoteConfigs: [[credentialsId: 'd0f156e2-1eaa-4538-8f79-71f3feb71225', url: 'https://github.com/narendrapb/cicd.git']])
+                }
+            }
+        }
+        stage('dockerlogin') {
+            steps {
+                script{
+                    withCredentials([usernamePassword(credentialsId: 'cd5a23cd-bf9a-459b-bf4c-70e889b2e10d', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
+                    }
+                }
+            }
+        }
+        stage('build') {
+            steps {
+                script{
+                sh 'docker build -t webapp .'
+                }
+            }
+        }
+        stage('dockerpush') {
+            steps {
+                script{
+                sh 'docker tag webapp narendrapujanaboyina/k8s:v4'
+                sh 'docker push narendrapujanaboyina/k8s:v4'
+                }
+            }
+        }
+    }
 }
