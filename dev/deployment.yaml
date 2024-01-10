@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocddeploymnt
+spec:
+  selector:
+    matchLabels:
+      app: argocdone
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: argocdone
+    spec:
+      containers:
+        - name: argocdcon
+          image: nginx:replaceImageTag
+          ports:
+          - containerPort: 8080
