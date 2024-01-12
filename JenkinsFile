@@ -1,18 +1,21 @@
 pipeline {
     agent any
+    environment {
+        imageName = ''
+    }
 
     stages {
         stage('checkout') {
             steps {
                 script {
-                    checkout scmGit(branches: [[name: '*/feature_branch']], extensions: [], userRemoteConfigs: [[credentialsId: 'd0f156e2-1eaa-4538-8f79-71f3feb71225', url: 'https://github.com/narendrapb/cicd.git']])
+                    checkout scmGit(branches: [[name: '*/feature_branch']], extensions: [], userRemoteConfigs: [[credentialsId: 'github', url: 'https://github.com/narendrapb/cicd.git']])
                 }
             }
         }
         stage('dockerlogin') {
             steps {
                 script{
-                    withCredentials([usernamePassword(credentialsId: 'cd5a23cd-bf9a-459b-bf4c-70e889b2e10d', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    withCredentials([usernamePassword(credentialsId: '649c1a05-dd06-4fea-8cc9-1cbcf9b0782e', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
                     }
                 }
@@ -28,8 +31,41 @@ pipeline {
         stage('dockerpush') {
             steps {
                 script{
-                sh 'docker tag webapp narendrapujanaboyina/k8s:v4'
-                sh 'docker push narendrapujanaboyina/k8s:v4'
+                sh 'docker tag webapp narendrapujanaboyina/k8s:${BUILD_NUMBER}'
+                sh 'docker push narendrapujanaboyina/k8s:${BUILD_NUMBER}'
+                }
+            }
+        }
+        stage('checkout to yaml files') {
+            steps {
+                script {
+                    checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'github', url: 'https://github.com/narendrapb/argocdk8s.git']])
+                    // sh "grep -oP 'image: nginx:\K[^[:space:]]+' dev/deployment.yaml"
+                    imageName = sh(script: "grep -oP 'image: nginx:\\K[^[:space:]]+' dev/deployment.yaml", returnStdout: true).trim()
+                    sh "echo \"${imageName}\""
+                }
+            }
+        }
+        stage('Update Deployment File') {
+            environment {
+                GIT_REPO_NAME = "argocdk8s"
+                GIT_USER_NAME = "narendrapb"
+            }
+            steps {
+                script {
+                    withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+                        sh '''
+                            echo"${env.imageName}"
+                            git config user.email "narendrapujanaboyina@gmail.com"
+                            git config user.name "narendrapb"
+                            BUILD_NUMBER=${BUILD_NUMBER}
+                            git pull origin main
+                            sed -i "s/${env.imageName}/${BUILD_NUMBER}/g" dev/deployment.yaml
+                            git add dev/deployment.yaml
+                            git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+                            git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
+                        '''
+                    }
                 }
             }
         }
