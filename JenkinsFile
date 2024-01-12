@@ -54,13 +54,13 @@ pipeline {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+                        echo"${imageName}"
                         sh '''
-                            echo"${env.imageName}"
                             git config user.email "narendrapujanaboyina@gmail.com"
                             git config user.name "narendrapb"
                             BUILD_NUMBER=${BUILD_NUMBER}
                             git pull origin main
-                            sed -i "s/${env.imageName}/${BUILD_NUMBER}/g" dev/deployment.yaml
+                            sed -i "s/${imageName}/${BUILD_NUMBER}/g" dev/deployment.yaml
                             git add dev/deployment.yaml
                             git commit -m "Update deployment image to version ${BUILD_NUMBER}"
                             git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
