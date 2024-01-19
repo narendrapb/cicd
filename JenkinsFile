@@ -54,6 +54,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+                        echo"${imageName}"
                         sh """
                             git config user.email "narendrapujanaboyina@gmail.com"
                             git config user.name "narendrapb"
