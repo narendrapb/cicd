@@ -40,8 +40,8 @@ pipeline {
             steps {
                 script {
                     checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'github', url: 'https://github.com/narendrapb/argocdk8s.git']])
-                    // sh "grep -oP 'image: nginx:\K[^[:space:]]+' dev/deployment.yaml"
-                    imageName = sh(script: "grep -oP 'image: nginx:\\K[^[:space:]]+' dev/deployment.yaml", returnStdout: true).trim()
+                    // sh "grep -oP 'image: narendrapujanaboyina/k8s:\K[^[:space:]]+' dev/deployment.yaml"
+                    imageName = sh(script: "grep -oP 'image: narendrapujanaboyina/k8s:\\K[^[:space:]]+' dev/deployment.yaml", returnStdout: true).trim()
                     sh "echo \"${imageName}\""
                 }
             }
