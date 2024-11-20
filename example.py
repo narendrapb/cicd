@@ -2,7 +2,7 @@ import sqlite3
 
 def vulnerable_function(user_input):
     # Hardcoded credentials (security vulnerability)
-    db_password = "hardcoded_password"
+    db_password = "Narendra@123"
 
     # SQL Injection vulnerability: unsafe usage of user input in SQL query
     conn = sqlite3.connect("example.db")
