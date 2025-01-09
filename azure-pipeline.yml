@@ -5,7 +5,13 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-    - bash: |
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: $(azSubscription)
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
         echo "Narendra"
         echo "$(username)"
         echo "$(Passwd)"
+  displayName: 'Copy Artifact to Azure Blob Storage'
