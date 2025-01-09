@@ -19,6 +19,6 @@ steps:
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
-      az storage blob upload --account-name saartifacts1969 --account-key $(accntKey) --container-name haartifacts --file '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip' --name 'HAProd/Backend/$(Build.BuildId).zip'
-
+      az storage blob upload --account-name saartifacts1969 --container-name haartifacts --file '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip' --name 'HAProd/Backend/$(Build.BuildId).zip'
+      ####--account-key $(accntKey)
   displayName: 'Copy Artifact to Azure Blob Storage'
