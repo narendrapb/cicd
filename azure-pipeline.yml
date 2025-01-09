@@ -1,1 +1,6 @@
+trigger:
+   - none
 
+steps:
+    - bash: |
+        echo "Narendra"
