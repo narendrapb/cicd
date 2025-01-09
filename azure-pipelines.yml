@@ -10,10 +10,19 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.Repository.LocalPath)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    replaceExistingArchive: true
+- task: AzureFileCopy@4
+  inputs:
+    SourcePath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    azureSubscription: 67875fb8-3c93-456f-9d1b-add5b41d14b9
+    Destination: AzureBlob
+    storage: saartifacts1969
+    ContainerName: haartifacts
+    TargetPath: 'HAProd/Backend'
 
-- script: |
-    ls
-    ls -la
-  displayName: 'Run a multi-line script'
