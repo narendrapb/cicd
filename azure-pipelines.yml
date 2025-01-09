@@ -1,8 +1,3 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - main
 
@@ -17,12 +12,18 @@ steps:
     archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
     replaceExistingArchive: true
-- task: AzureFileCopy@4
-  inputs:
-    SourcePath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-    azureSubscription: 67875fb8-3c93-456f-9d1b-add5b41d14b9
-    Destination: AzureBlob
-    storage: saartifacts1969
-    ContainerName: haartifacts
-    TargetPath: 'HAProd/Backend'
 
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: '67875fb8-3c93-456f-9d1b-add5b41d14b9'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      # Install AzCopy
+      curl -sL https://aka.ms/downloadazcopy-v10-linux | bash
+      export PATH=$PATH:/home/$(whoami)/azcopy
+
+      # Copy files to Azure Blob Storage
+      azcopy copy "$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip" "https://saartifacts1969.blob.core.windows.net/haartifacts/HAProd/Backend/$(Build.BuildId).zip" --recursive
+
+  displayName: 'Copy Artifact to Azure Blob Storage'
