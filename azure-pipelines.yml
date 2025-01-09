@@ -19,11 +19,6 @@ steps:
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
-      # Install AzCopy
-      curl -sL https://aka.ms/downloadazcopy-v10-linux | bash
-      export PATH=$PATH:/home/$(whoami)/azcopy
-
-      # Copy files to Azure Blob Storage
-      azcopy copy "$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip" "https://saartifacts1969.blob.core.windows.net/haartifacts/HAProd/Backend/$(Build.BuildId).zip" --recursive
+      az storage blob upload-batch -d haartifacts --account-name saartifacts1969 --account-key $(accntKey) -s '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip' 
 
   displayName: 'Copy Artifact to Azure Blob Storage'
