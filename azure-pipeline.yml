@@ -8,8 +8,13 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-  - bash: |
-      echo "Narendra"
-      echo "$(myhello)"
-      echo "$(password)"
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: $(azSubscription)
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      az storage blob upload --account-name saartifacts1969 --container-name haartifacts --file '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip' --name 'HAProd/Backend/$(Build.BuildId).zip'
+      ####--account-key $(accntKey)
+  displayName: 'Copy Artifact to Azure Blob Storage'
   
