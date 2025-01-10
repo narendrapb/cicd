@@ -8,24 +8,19 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-  - bash: 
-      echo "$(azSubscription)"
-# - task: ArchiveFiles@2
-#   inputs:
-#     rootFolderOrFile: '$(Build.Repository.LocalPath)'
-#     includeRootFolder: false
-#     archiveType: 'zip'
-#     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-#     replaceExistingArchive: true
-# - task: AzureCLI@2
-#   inputs:
-#     azureSubscription: '$(azSubscription)'
-#     scriptType: 'bash'
-#     scriptLocation: 'inlineScript'
-#     inlineScript: |
-#       az storage blob upload --account-name saartifacts1969 --container-name haartifacts --file '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip' --name 'HAProd/Backend/$(Build.BuildId).zip'
-#       ####--account-key $(accntKey)
-#     - env:
-#     azSubscription: '$(azSubscription)'
-#   displayName: 'Copy Artifact to Azure Blob Storage'
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.Repository.LocalPath)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    replaceExistingArchive: true
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: '$(azSubscription)'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      az storage blob upload --account-name saartifacts1969 --container-name haartifacts --file '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip' --name 'HAProd/Backend/$(Build.BuildId).zip'
+  displayName: 'Copy Artifact to Azure Blob Storage'
   
