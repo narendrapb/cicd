@@ -8,9 +8,16 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.Repository.LocalPath)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    replaceExistingArchive: true
 - task: AzureCLI@2
   inputs:
-    azureSubscription: $(azSubscription)
+    azureSubscription: '67875fb8-3c93-456f-9d1b-add5b41d14b9'
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
